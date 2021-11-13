@@ -3,18 +3,20 @@ from os.path import isfile, join
 
 import filecmp
 
+import sys
+
 import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
 
 def _on_modified(event):
-    print(f"hey buddy, {event.src_path} has been modified")
     compare_answer(questions_path, solutions_path,
                    event.src_path.replace(questions_path + "\\", ""))
 
 
 def watch_modified_answer(questions_path):
+    print("Running by watch and check answer when it changes")
     patterns = ["*"]
     ignore_patterns = None
     ignore_directories = False
@@ -39,6 +41,7 @@ def watch_modified_answer(questions_path):
 
 
 def check_all_answers(compare_answer, questions_path, solutions_path):
+    print("Running by check all answers")
     questions = [f for f in listdir(questions_path)
                  if isfile(join(questions_path, f))]
 
@@ -63,5 +66,7 @@ solutions_folder_name = ""
 questions_path = join(folder_path, questions_folder_name)
 solutions_path = join(folder_path, solutions_folder_name)
 
-#check_all_answers(compare_answer, questions_path, solutions_path)
-watch_modified_answer(questions_path)
+if len(sys.argv) == 1:
+    watch_modified_answer(questions_path)
+else:
+    check_all_answers(compare_answer, questions_path, solutions_path)
