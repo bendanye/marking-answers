@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, sep
 
 import filecmp
 
@@ -11,8 +11,9 @@ from watchdog.events import PatternMatchingEventHandler
 
 
 def _on_modified(event):
-    compare_answer(questions_path, solutions_path,
-                   event.src_path.replace(questions_path + "\\", ""))
+    if event.src_path.endswith(".txt"):
+        question = event.src_path.replace(questions_path + sep, "")
+        compare_answer(questions_path, solutions_path, question)
 
 
 def watch_modified_answer(questions_path):
@@ -45,7 +46,7 @@ def check_all_answers(compare_answer, questions_path, solutions_path):
     questions = [f for f in listdir(questions_path)
                  if isfile(join(questions_path, f))]
 
-    for question in questions:
+    for question in sorted(questions):
         compare_answer(questions_path, solutions_path, question)
 
 
