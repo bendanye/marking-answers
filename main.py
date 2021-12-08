@@ -9,11 +9,12 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
-
 def _on_modified(event):
     if event.src_path.endswith(".txt"):
         question = event.src_path.replace(questions_path + sep, "")
-        compare_answer(questions_path, solutions_path, question)
+        correct_ans = compare_answer(questions_path, solutions_path, question)
+
+        print_answer_result(question, correct_ans)
 
 
 def watch_modified_answer(questions_path):
@@ -47,14 +48,17 @@ def check_all_answers(compare_answer, questions_path, solutions_path):
                  if isfile(join(questions_path, f))]
 
     for question in sorted(questions):
-        compare_answer(questions_path, solutions_path, question)
+        correct_ans = compare_answer(questions_path, solutions_path, question)
+
+        print_answer_result(question, correct_ans)
 
 
 def compare_answer(questions_path, solutions_path, question):
-    is_same = filecmp.cmp(join(questions_path, question),
+    return filecmp.cmp(join(questions_path, question),
                           join(solutions_path, question))
 
-    if is_same:
+def print_answer_result(question, correct_ans):
+    if correct_ans:
         print(f"{question} ✅")
     else:
         print(f"{question} ❌")
